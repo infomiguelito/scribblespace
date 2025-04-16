@@ -20,7 +20,7 @@ class RemoteDataSource private constructor(
 
             )
 
-            val addedDocument = withTimeout(2000){
+            val addedDocument = withTimeout(2000) {
                 database.collection(NOTE_COLLECTION)
                     .add(noteMap)
                     .await()
@@ -67,7 +67,17 @@ class RemoteDataSource private constructor(
     }
 
     suspend fun deleteNote(id: String): Result<Unit> {
-        return TODO()
+       return try {
+            withTimeout(2000) {
+                database.collection(NOTE_COLLECTION)
+                    .document(id)
+                    .delete()
+                    .await()
+                Result.success(Unit)
+            }
+        } catch (ex: Exception) {
+            Result.failure(ex)
+        }
     }
 
     companion object {
